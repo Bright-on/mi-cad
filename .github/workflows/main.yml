@@ -1,0 +1,32 @@
+name: Compilar a EXE
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      # 1. Esta línea descarga automáticamente tu archivo convertidor_cad.py que subiste en el Paso 2
+      - name: Leer archivos del repositorio
+        uses: actions/checkout@v4
+
+      # 2. Instala un Python 3.11 completo y oficial de Windows (con Tkinter incluido)
+      - name: Instalar Python completo
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Instala las librerías y transforma tu convertidor_cad.py en Empaquetador_CAD.exe
+      - name: Crear el archivo .EXE
+        run: |
+          pip install pyinstaller svgpathtools ezdxf numpy
+          pyinstaller --onefile --noconsole --exclude-module scipy --name "Empaquetador_CAD" convertidor_cad.py
+
+      # 4. Empaqueta el .EXE resultante para que lo descargues
+      - name: Entregar archivo EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Descargar_Mi_EXE_Aqui
+          path: dist/Empaquetador_CAD.exe
